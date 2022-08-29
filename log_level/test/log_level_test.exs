@@ -51,4 +51,52 @@ defmodule LogLevelTest do
       assert LogLevel.to_label(-1, true) == :unknown
     end
   end
+
+  describe "LogLevel.alert_recipient/2" do
+    @tag task_id: 2
+    test "fatal code sends alert to ops" do
+      assert LogLevel.alert_recipient(5, false) == :ops
+    end
+
+    @tag task_id: 2
+    test "error code sends alert to ops" do
+      assert LogLevel.alert_recipient(4, false) == :ops
+      assert LogLevel.alert_recipient(4, true) == :ops
+    end
+
+    @tag task_id: 2
+    test "unknown code sends alert to dev team 1 for a legacy app" do
+      assert LogLevel.alert_recipient(6, true) == :dev1
+      assert LogLevel.alert_recipient(0, true) == :dev1
+      assert LogLevel.alert_recipient(5, true) == :dev1
+    end
+
+    @tag task_id: 2
+    test "unknown code sends alert to dev team 2" do
+      assert LogLevel.alert_recipient(6, false) == :dev2
+    end
+
+    @tag task_id: 2
+    test "trace code does not send alert" do
+      assert LogLevel.alert_recipient(0, false) == false
+    end
+
+    @tag task_id: 2
+    test "debug code does not send alert" do
+      assert LogLevel.alert_recipient(1, false) == false
+      assert LogLevel.alert_recipient(1, true) == false
+    end
+
+    @tag task_id: 2
+    test "info code does not send alert" do
+      assert LogLevel.alert_recipient(2, false) == false
+      assert LogLevel.alert_recipient(2, true) == false
+    end
+
+    @tag task_id: 2
+    test "warning code does not send alert" do
+      assert LogLevel.alert_recipient(3, false) == false
+      assert LogLevel.alert_recipient(3, true) == false
+    end
+  end
 end
