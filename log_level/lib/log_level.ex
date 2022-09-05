@@ -23,4 +23,18 @@ defmodule LogLevel do
 
   end
 
+  @spec alert_recipient(any, any) :: :dev1 | :dev2 | false | :ops
+  def alert_recipient(level, legacy) do
+    # Please implement the alert_recipient/2 function
+      label = to_label(level, legacy)
+      case label do
+        n when n == :error or n == :fatal -> :ops
+        :unknown ->
+            case legacy do
+             true -> :dev1
+             false -> :dev2
+            end
+        _ -> false
+      end
+  end
 end
